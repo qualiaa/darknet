@@ -207,19 +207,19 @@ void print_detector_detections(FILE **fps, char *id, detection *dets, int total,
 {
     int i, j;
     for(i = 0; i < total; ++i){
-        float xmin = dets[i].bbox.x - dets[i].bbox.w/2. + 1;
-        float xmax = dets[i].bbox.x + dets[i].bbox.w/2. + 1;
-        float ymin = dets[i].bbox.y - dets[i].bbox.h/2. + 1;
-        float ymax = dets[i].bbox.y + dets[i].bbox.h/2. + 1;
+        float xmin = dets[i].bbox.x - dets[i].bbox.w/2.;
+        float xmax = dets[i].bbox.x + dets[i].bbox.w/2.;
+        float ymin = dets[i].bbox.y - dets[i].bbox.h/2.;
+        float ymax = dets[i].bbox.y + dets[i].bbox.h/2.;
 
-        if (xmin < 1) xmin = 1;
-        if (ymin < 1) ymin = 1;
-        if (xmax > w) xmax = w;
-        if (ymax > h) ymax = h;
+        if (xmin < 0) xmin = 0;
+        if (ymin < 0) ymin = 0;
+        if (xmax >= w) xmax = w-1;
+        if (ymax >= h) ymax = h-1;
 
         for(j = 0; j < classes; ++j){
             if (dets[i].prob[j]) fprintf(fps[j], "%s %f %f %f %f %f\n", id, dets[i].prob[j],
-                    xmin, ymin, xmax, ymax);
+                    xmin/w, ymin/h, xmax/w, ymax/h);
         }
     }
 }
@@ -417,10 +417,9 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
         imagenet = 1;
         classes = 200;
     } else {
-        if(!outfile) outfile = "comp4_det_test_";
         fps = calloc(classes, sizeof(FILE *));
         for(j = 0; j < classes; ++j){
-            snprintf(buff, 1024, "%s/%s%s.txt", prefix, outfile, names[j]);
+            snprintf(buff, 1024, "%s/%s.txt", prefix, names[j]);
             fps[j] = fopen(buff, "w");
         }
     }
