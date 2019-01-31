@@ -288,10 +288,9 @@ void validate_detector_flip(char *datacfg, char *cfgfile, char *weightfile, char
         imagenet = 1;
         classes = 200;
     } else {
-        if(!outfile) outfile = "comp4_det_test_";
         fps = calloc(classes, sizeof(FILE *));
         for(j = 0; j < classes; ++j){
-            snprintf(buff, 1024, "%s/%s%s.txt", prefix, outfile, names[j]);
+            snprintf(buff, 1024, "%s/%s.txt", prefix, names[j]);
             fps[j] = fopen(buff, "w");
         }
     }
@@ -570,7 +569,9 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
         }
         total += num_labels;
 
-        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n",
+                i, correct, total, (float)proposals/(i+1), avg_iou*100/total,
+                100.*correct/total);
         free(id);
         free_image(orig);
         free_image(sized);
