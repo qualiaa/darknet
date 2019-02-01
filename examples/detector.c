@@ -207,19 +207,15 @@ void print_detector_detections(FILE **fps, char *id, detection *dets, int total,
 {
     int i, j;
     for(i = 0; i < total; ++i){
-        float xmin = dets[i].bbox.x - dets[i].bbox.w/2.;
-        float xmax = dets[i].bbox.x + dets[i].bbox.w/2.;
-        float ymin = dets[i].bbox.y - dets[i].bbox.h/2.;
-        float ymax = dets[i].bbox.y + dets[i].bbox.h/2.;
-
-        if (xmin < 0) xmin = 0;
-        if (ymin < 0) ymin = 0;
-        if (xmax >= w) xmax = w-1;
-        if (ymax >= h) ymax = h-1;
+        float bx = dets[i].bbox.x / w;
+        float by = dets[i].bbox.y / h;
+        float bw = dets[i].bbox.w / w;
+        float bh = dets[i].bbox.h / h;
 
         for(j = 0; j < classes; ++j){
-            if (dets[i].prob[j]) fprintf(fps[j], "%s %f %f %f %f %f\n", id, dets[i].prob[j],
-                    xmin/w, ymin/h, xmax/w, ymax/h);
+            if (dets[i].prob[j]) fprintf(fps[j],
+                    "%s %f %f %f %f %f\n",
+                    id, dets[i].prob[j], bx, by, bw, bh);
         }
     }
 }
